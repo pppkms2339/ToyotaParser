@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Toyota</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+
+<body>
+  <form class="ui form">
+    <div class="field">
+      <div class="ui breadcrumb" wfd-id="61">
+        <a class="section" th:href="@{/}">Toyota</a>
+        <i class="right angle icon divider"></i>
+        <div class="active section" wfd-id="62">Поиск по номеру кузова</div>
+      </div>
+    </div>
+    <th:block th:unless="${exist}">
+      <div class="field">
+        <div class="ui segment" wfd-id="194">
+          <div class="ui red message" wfd-id="39">Указанный номер кузова не найден</div>
+          <a th:href="@{/}">Назад</a>
+        </div>
+      </div>
+    </th:block>
+    <th:block th:if="${exist}">
+      <div class="field">
+        <div class="ui segment" wfd-id="194">
+          <div class="ui items" wfd-id="232">
+            <div class="item" wfd-id="240">
+              <div class="image" wfd-id="246">
+                <img th:src='@{/images/auto.png}'>
+              </div>
+              <div class="content" wfd-id="241">
+                <a class="header"><span th:text="${auto}"></span></a>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Период производства: <span th:text="${period}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Код по каталогу: <span th:text="${code}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Комплектация: <span th:text="${equipment}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Полный номер кузова: <span th:text="${number}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Двигатель: <span th:text="${engine}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Кузов: <span th:text="${body}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Grade: <span th:text="${grade}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">КПП: <span th:text="${kpp}"></span></span>
+                </div>
+                <div class="meta" wfd-id="244">
+                  <span wfd-id="245">Прочее: <span th:text="${another}"></span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </th:block>
+  </form>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Toyota</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+  <script th:src="@{/js/main.js}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+
+<body>
+  <form class="ui form">
+    <div class="field">
+      <div class="ui breadcrumb" wfd-id="61">
+        <div class="active section" wfd-id="62">Toyota</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui segment" wfd-id="194">
+        <button class="ui button" id="parseBtn" onclick="return parse();">Загрузить данные с сайта</button>
+        <button class="ui loading button" id="parseBtnLoad" style="display: none">Загрузить данные с сайта</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui segment" wfd-id="194">
+        <div class="left menu" wfd-id="306">
+          <div class="item" wfd-id="307">
+            <div class="ui icon input" wfd-id="308">
+              <input type="text" placeholder="Номер кузова или шасси" id="searchText">
+              <i class="search link icon" id="searchBtn"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui segment" wfd-id="194">
+        <label>Модели автомобилей Toyota</label>
+        <th:block th:if="${#lists.size(cars)} > 0">
+          <table class="ui celled table">
+            <thead>
+            <tr>
+              <th>№</th>
+              <th>Модель</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="car, state : ${cars}">
+              <tr>
+                <td><div th:text="${state.index + 1}"></div></td>
+                <td><a th:href="@{'/' + ${car.id}}"><div th:text="${car.modelName}"></div></a></td>
+              </tr>
+            </th:block>
+            </tbody>
+          </table>
+        </th:block>
+        <th:block th:if="${#lists.size(cars)} == 0">
+          <div class="ui floating message" wfd-id="85">
+            <p>Нет данных в базе</p>
+          </div>
+        </th:block>
+      </div>
+    </div>
+  </form>
+  <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+      var path = [[@{/}]];
+    /*]]>*/
+  </script>
+</body>
+</html>

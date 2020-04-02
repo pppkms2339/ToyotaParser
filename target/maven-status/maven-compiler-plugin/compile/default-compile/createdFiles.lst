@@ -1,0 +1,7 @@
+ru\fogstream\config\DataSourceConfig.class
+ru\fogstream\repository\BodyBrandRepository.class
+ru\fogstream\ServingWebContentApplication.class
+ru\fogstream\entity\BodyBrand.class
+ru\fogstream\entity\CarModel.class
+ru\fogstream\repository\ModelRepository.class
+ru\fogstream\controller\DefaultController.class
