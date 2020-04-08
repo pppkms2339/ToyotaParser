@@ -3,5 +3,8 @@ C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\ServingWebContentA
 C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\controller\DefaultController.java
 C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\BodyBrand.java
 C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\config\DataSourceConfig.java
+C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\repository\EquipmentRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\Equipment.java
+C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\ProxyAddr.java
 C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\repository\BodyBrandRepository.java
 C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\CarModel.java

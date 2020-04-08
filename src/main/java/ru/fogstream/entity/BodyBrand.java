@@ -1,6 +1,8 @@
 package ru.fogstream.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "body_brand")
 public class BodyBrand {
@@ -13,6 +15,9 @@ public class BodyBrand {
     private String bodyName;
 
     private String link;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Equipment> equipments = new ArrayList<>();
 
     public BodyBrand(String bodyName, String link) {
         this.bodyName = bodyName;
@@ -44,5 +49,13 @@ public class BodyBrand {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<Equipment> getEquipments() {
+        return equipments;
+    }
+
+    public void setEquipments(List<Equipment> equipments) {
+        this.equipments = equipments;
     }
 }

@@ -18,24 +18,24 @@
       <div class="ui breadcrumb" wfd-id="61">
         <a class="section" th:href="@{/}">Toyota</a>
         <i class="right angle icon divider"></i>
-        <div class="active section" wfd-id="62"><span th:text="${car}"></span></div>
+        <div class="active section" wfd-id="62"><span th:text="${car.modelName}"></span></div>
       </div>
     </div>
     <div class="field">
-      <label>Марки кузова Toyota <span th:text="${car}"></span></label>
+      <label>Марки кузова Toyota <span th:text="${car.modelName}"></span></label>
       <th:block th:if="${#lists.size(bodyBrands)} > 0">
         <table class="ui celled table">
           <thead>
           <tr>
             <th>№</th>
-            <th>Модель</th>
+            <th>Марка</th>
           </tr>
           </thead>
           <tbody>
           <th:block th:each="bodyBrand, state : ${bodyBrands}">
             <tr>
               <td><div th:text="${state.index + 1}"></div></td>
-              <td><a th:href="@{bodyBrand.link}"><div th:text="${bodyBrand.bodyName}"></div></a></td>
+              <td><a th:href="@{'/model/' + ${car.id} + '/body/' + ${bodyBrand.id}}"><div th:text="${bodyBrand.bodyName}"></div></a></td>
             </tr>
           </th:block>
           </tbody>

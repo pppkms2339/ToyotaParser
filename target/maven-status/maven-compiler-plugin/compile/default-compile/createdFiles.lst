@@ -3,5 +3,8 @@ ru\fogstream\repository\BodyBrandRepository.class
 ru\fogstream\ServingWebContentApplication.class
 ru\fogstream\entity\BodyBrand.class
 ru\fogstream\entity\CarModel.class
+ru\fogstream\entity\ProxyAddr.class
+ru\fogstream\entity\Equipment.class
 ru\fogstream\repository\ModelRepository.class
 ru\fogstream\controller\DefaultController.class
+ru\fogstream\repository\EquipmentRepository.class

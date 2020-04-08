@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Toyota</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+
+<body>
+  <form class="ui form">
+    <div class="field">
+      <div class="ui breadcrumb" wfd-id="61">
+        <a class="section" th:href="@{/}">Toyota</a>
+        <i class="right angle icon divider"></i>
+        <a class="section" th:href="@{'/model/' + ${car.id}}"><span th:text="${car.modelName}"></span></a>
+        <i class="right angle icon divider"></i>
+        <div class="active section" wfd-id="62"><span th:text="${body.bodyName}"></span></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Комплектации кузова <span th:text="${body.bodyName}"></span> Toyota <span th:text="${car.modelName}"></span></label>
+      <th:block th:if="${#lists.size(equipments)} > 0">
+        <table class="ui celled table">
+          <thead>
+          <tr>
+            <th>№</th>
+            <th>Комплектация</th>
+            <th>Двигатель</th>
+            <th>Период производства</th>
+            <th>Кузов</th>
+            <th>Grade</th>
+            <th>КПП</th>
+            <th>Прочее</th>
+          </tr>
+          </thead>
+          <tbody>
+          <th:block th:each="equipment, state : ${equipments}">
+            <tr>
+              <td><div th:text="${state.index + 1}"></div></td>
+              <td><a th:href="@{'/model/' + ${car.id} + '/body/' + ${body.id} + '/equipment/' + ${equipment.id}}"><div th:text="${equipment.equipmentName}"></div></a></td>
+              <td><div th:text="${equipment.engine}"></div></td>
+              <td><div th:text="${equipment.period}"></div></td>
+              <td><div th:text="${equipment.body}"></div></td>
+              <td><div th:text="${equipment.grade}"></div></td>
+              <td><div th:text="${equipment.kpp}"></div></td>
+              <td><div th:text="${equipment.another}"></div></td>
+            </tr>
+          </th:block>
+          </tbody>
+        </table>
+      </th:block>
+      <th:block th:if="${#lists.size(equipments)} == 0">
+        <div class="ui floating message" wfd-id="85">
+          <p>Нет данных в базе</p>
+        </div>
+      </th:block>
+    </div>
+  </form>
+</body>
+</html>
