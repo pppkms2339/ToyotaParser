@@ -4,10 +4,19 @@ function parse() {
         document.getElementById('parseBtnLoad').style.display = 'block';
         let xhr = new XMLHttpRequest();
         let url = path + "parse";
-        xhr.open("GET", url, false);
+        xhr.open("GET", url, true);
+        xhr.onload = function () {
+            document.getElementById('parseBtn').style.display = 'block';
+            document.getElementById('parseBtnLoad').style.display = 'none';
+            location.replace(path);
+        }
         xhr.send();
-        location.replace(path);
+        //fetch(url).then(location.replace(path));
     }
+}
+
+function sendRequest(method, url, body = null) {
+    return fetch(url)
 }
 
 $(document).ready(function() {

@@ -24,6 +24,8 @@ public class Equipment {
 
     private String another;
 
+    private String link;
+
     public Equipment() {
     }
 
@@ -89,5 +91,13 @@ public class Equipment {
 
     public void setAnother(String another) {
         this.another = another;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 }
