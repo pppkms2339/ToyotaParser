@@ -7,6 +7,4 @@ import ru.fogstream.entity.GroupComp;
 @Repository
 public interface GroupRepository extends JpaRepository<GroupComp, Long> {
 
-    GroupComp findByGroupName(String groupName);
-
 }

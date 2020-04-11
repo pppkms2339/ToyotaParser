@@ -29,6 +29,8 @@ public class DefaultController {
     private static final int REQUEST_COUNT = 25;
     private int count = 0, proxyCount = 0;
     private List<ProxyAddr> proxyAddrList = null;
+    private List<GroupComp> currentGroupList = null;
+    private List<SubgroupComp> currentSubgroupList = null;
 
     @Autowired
     ModelRepository modelRepository;
@@ -86,7 +88,7 @@ public class DefaultController {
 //            bodyBrandRepository.save(bodyBrand);
 //        }
 
-        CarModel testCar = new CarModel("Supra", "/supra/");
+        CarModel testCar = new CarModel("Allex", "/allex/");
         //Получение кузовов для тестовой модели
         List<BodyBrand> bodyBrands = getBodyBrandListForCar(testCar);
         testCar.getBodyBrands().addAll(bodyBrands);
@@ -98,11 +100,19 @@ public class DefaultController {
             bodyBrandRepository.save(bodyBrand);
         }
         //Получение группы для каждой комплектации
+        //текущий список групп
+        Iterable<GroupComp> iterable = groupRepository.findAll();
+        currentGroupList = new ArrayList<>();
+        iterable.forEach(currentGroupList::add);
+        //текущий список подгрупп
+        Iterable<SubgroupComp> iterable2 = subgroupRepository.findAll();
+        currentSubgroupList = new ArrayList<>();
+        iterable2.forEach(currentSubgroupList::add);
+        //идем по всем комплектациям
         Iterable<Equipment> equipments = equipmentRepository.findAll();
         for (Equipment equipment : equipments) {
             getGroupListForEquipment(equipment);
         }
-
         System.out.println("Время работы: " + (System.currentTimeMillis() - start) / 1000);
     }
 
@@ -176,15 +186,22 @@ public class DefaultController {
             for (int i = 0; i < elements.size() - 1; i++) {
                 String groupName = elements.get(i).text();
                 String link = elements.get(i).select("a").attr("href");
-                GroupComp groupFromBase = groupRepository.findByGroupName(groupName);
-                if (groupFromBase != null && groupFromBase.getGroupName().equals(groupName)) {
+                GroupComp groupFromBase = null;
+                for (GroupComp groupComp : currentGroupList) {
+                    if (groupComp.getGroupName().equals(groupName)) {
+                        groupFromBase = groupComp;
+                        break;
+                    }
+                }
+                if (groupFromBase != null) {
                     //Такая группа уже есть в БД
-                    getSubgroupListForGroup(groupFromBase, link);
+                    getSubgroupListForGroup(groupFromBase, link, equipment);
                 } else {
                     //Такой группы нет в БД
                     GroupComp group = new GroupComp(groupName);
+                    currentGroupList.add(group);
                     groupRepository.save(group);
-                    getSubgroupListForGroup(group, link);
+                    getSubgroupListForGroup(group, link, equipment);
                 }
             }
         } catch (Exception e) {
@@ -192,24 +209,31 @@ public class DefaultController {
         }
     }
 
-    private void getSubgroupListForGroup(GroupComp groupComp, String link) {
+    private void getSubgroupListForGroup(GroupComp groupComp, String link, Equipment equipment) {
         try {
+            List<Component> components = null;
             String pageHtml = getPageHtml(site + link);
             Document doc = Jsoup.parse(pageHtml);
             Elements elements = doc.select(".parts_picture");
             for (Element element : elements) {
                 String subgroupName = element.attr("title");
-                SubgroupComp subgroupFromBase = subgroupRepository.findBySubgroupName(subgroupName);
-                if (subgroupFromBase != null && subgroupFromBase.getSubgroupName().equals(subgroupName)) {
+                String nextLink = element.parent().attr("href");
+                SubgroupComp subgroupFromBase = null;
+                for (SubgroupComp subgroupComp : currentSubgroupList) {
+                    if (subgroupComp.getSubgroupName().equals(subgroupName)) {
+                        subgroupFromBase = subgroupComp;
+                        break;
+                    }
+                }
+                if (subgroupFromBase != null) {
                     //Такая подгруппа уже есть в БД
-                    System.out.println("Такая подгруппа уже есть");
+                    components = getComponentListForSubgroup(subgroupFromBase, nextLink);
                 } else {
                     //Такой подгруппы нет в БД
                     SubgroupComp subgroup = new SubgroupComp();
                     subgroup.setSubgroupName(subgroupName);
                     subgroup.setGroupComp(groupComp);
                     subgroup.setSubgroupCode(element.parent().parent().text().substring(0, 5));
-                    String nextLink = element.parent().attr("href");
                     //копируем картинку на диск
                     String src = element.attr("src");
                     String fileName = src.substring(src.lastIndexOf('/') + 1);
@@ -218,12 +242,56 @@ public class DefaultController {
                     BufferedImage image = ImageIO.read(url);
                     ImageIO.write(image, "png", new File(uploadPath + fileName));
                     subgroupRepository.save(subgroup);
-                    System.out.println("Такой подгруппы нет - " + nextLink);
+                    currentSubgroupList.add(subgroup);
+                    components = getComponentListForSubgroup(subgroup, nextLink);
+                }
+                equipment.getComponents().addAll(components);
+                equipmentRepository.save(equipment);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<Component> getComponentListForSubgroup(SubgroupComp subgroup, String link) {
+        List<Component> components = new ArrayList<>();
+        try {
+            String pageHtml = getPageHtml(site + link);
+            Document doc = Jsoup.parse(pageHtml);
+            Elements tables = doc.select("table");
+            for (Element table : tables) {
+                //копируем картинку на диск
+                String src = table.select("#part_image img").attr("src");
+                String fileName = src.substring(src.lastIndexOf('/') + 1);
+                URL url = new URL(site + src);
+                BufferedImage image = ImageIO.read(url);
+                ImageIO.write(image, "png", new File(uploadPath + fileName));
+                //получаем список деталей
+                Elements elements = table.select(".detail-list a");
+                for (Element element : elements) {
+                    String text = element.text();
+                    if (text.startsWith("**")) {
+                        continue;
+                    }
+                    Component component = new Component();
+                    component.setPicture(fileName); //картинка у всех одна
+                    component.setSubgroupComp(subgroup); //относятся все к одной подгруппе
+                    component.setComponentName(text);
+                    String href = element.attr("href");
+                    if (href.contains("?")) {
+                        component.setComponentCode(href.substring(href.indexOf('=') + 1));
+                    } else {
+                        String[] hrefParts = href.split("/");
+                        component.setComponentCode(hrefParts[hrefParts.length - 1]);
+                    }
+                    component.setLink(href);
+                    components.add(component);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return components;
     }
 
     @GetMapping("/model/{carModelId}")
@@ -244,6 +312,19 @@ public class DefaultController {
         List<Equipment> equipments = bodyBrand.getEquipments();
         model.addAttribute("equipments", equipments);
         return "equipment";
+    }
+
+    @GetMapping("/model/{carModelId}/body/{bodyBrandId}/equipment/{equipmentId}")
+    public String component(@PathVariable("carModelId") Long modelId, @PathVariable("bodyBrandId") Long bodyId, @PathVariable("equipmentId") Long equipmentId, Model model) {
+        CarModel car = modelRepository.findById(modelId).get();
+        model.addAttribute("car", car);
+        BodyBrand bodyBrand = bodyBrandRepository.findById(bodyId).get();
+        model.addAttribute("body", bodyBrand);
+        Equipment equipment = equipmentRepository.findById(equipmentId).get();
+        model.addAttribute("equipment", equipment);
+        List<Component> components = equipment.getComponents();
+        model.addAttribute("components", components);
+        return "component";
     }
 
     @GetMapping("/searchBodyNumber")

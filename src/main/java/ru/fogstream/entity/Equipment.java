@@ -1,6 +1,8 @@
 package ru.fogstream.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "equipment")
 public class Equipment {
@@ -25,6 +27,9 @@ public class Equipment {
     private String another;
 
     private String link;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Component> components = new ArrayList<>();
 
     public Equipment() {
     }
@@ -99,5 +104,13 @@ public class Equipment {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Component> components) {
+        this.components = components;
     }
 }
