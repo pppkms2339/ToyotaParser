@@ -1,0 +1,130 @@
+openapi: 3.0.1
+info:
+  title: Toyota API
+  description: Этот API используется для получения информации о моделях Toyota, марках кузовов, их комплектаций, запчастях. По номеру кузова можно определить комплектацию (https://toyota.epcdata.ru/)
+  termsOfService: ''
+  contact:
+    email: anton.loshmanov@fogstream.ru
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+externalDocs:
+  description: Подробнее
+  url: 'https://toyota.epcdata.ru'
+servers:
+  - url: 'http://localhost:8080/api'
+tags:
+  - name: model
+    description: Информация о моделях авто марки Toyota
+  - name: body
+    description: Информация о марках кузовов Toyota
+  - name: equipment
+    description: Информация о комплектациях Toyota
+paths:
+  /model/findAll:
+    get:
+      tags:
+        - model
+      summary: Найти все модели
+      description: Найти все объекты класса CarModel (модель, model) в базе данных и вывести в виде списка
+      operationId: findAllmodels
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+  /equipment/findByBodyNumber:
+    get:
+      tags:
+        - equipment
+      summary: Найти комплектацию кузова по номеру кузова. Номер кузова указан в свидетельстве о регистрации
+      description: Найти комплектацию (объект класса Equipment) по номеру кузова
+      operationId: findEquipmentByBodyNumber
+      parameters:
+        - in: path
+          name: searchNumber
+          description: номер кузова
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Equipment'
+components:
+  schemas:
+    Model:
+      required:
+      - id
+      - name
+      - link
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Allex
+        link:
+          type: string
+          example: /allex/
+    Equipment:
+      required:
+        - id
+        - name
+        - period
+        - engine
+        - body
+        - brand
+        - grade
+        - kpp
+        - anotherInfo
+        - link
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: CR30G-PEZX
+        period:
+          type: string
+          example: 08.1988 - 01.1992
+        engine:
+          type: string
+          example: 2CT
+        body:
+          type: string
+          example: WG
+        grade:
+          type: string
+          example: E  
+        kpp:
+          type: string
+          example: ATM
+        anotherInfo:
+          type: string
+          example: 4FC HRF 08S
+        link:
+          type: string
+          example: /masterace/cr30g/50486/
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
