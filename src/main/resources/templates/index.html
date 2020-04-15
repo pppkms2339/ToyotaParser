@@ -22,8 +22,8 @@
     </div>
     <div class="field">
       <div class="ui segment" wfd-id="194">
-        <button class="ui button" id="parseBtn" onclick="return parse();">Загрузить данные с сайта</button>
-        <button class="ui loading button" id="parseBtnLoad" style="display: none">Загрузить данные с сайта</button>
+        <button class="ui button" id="parseBtn" style="display: block" th:onclick="javascript:parse(); return false;">Загрузить данные с сайта</button>
+        <button class="ui loading button" id="parseBtnLoad" style="display: none" th:onclick="return false;">Загрузить данные с сайта</button>
       </div>
     </div>
     <div class="field">

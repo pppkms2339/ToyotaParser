@@ -1,16 +1,18 @@
 function parse() {
     if (confirm("Парсинг сайта может занять много времени. Вы уверены?")) {
-        document.getElementById('parseBtn').style.display = 'none';
-        document.getElementById('parseBtnLoad').style.display = 'block';
         let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState < 4) {
+            $('#parseBtn').css('display','none');
+            $('#parseBtnLoad').css('display','block');
+          }
+        };
+        xhr.onload = function() {
+            location.replace(path);
+        };
         let url = path + "parse";
         xhr.open("GET", url, true);
-        xhr.onload = function () {
-            document.getElementById('parseBtn').style.display = 'block';
-            document.getElementById('parseBtnLoad').style.display = 'none';
-            location.replace(path);
-        }
-        xhr.send();
+        xhr.send(null);
         //fetch(url).then(location.replace(path));
     }
 }

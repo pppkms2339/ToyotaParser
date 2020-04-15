@@ -22,36 +22,44 @@
         <i class="right angle icon divider"></i>
         <a class="section" th:href="@{'/model/' + ${car.id} + '/body/' + ${body.id}}"><span th:text="${body.bodyName}"></span></a>
         <i class="right angle icon divider"></i>
-        <div class="active section" wfd-id="62"><span th:text="${equipment.equipmentName}"></span></div>
+        <a class="section" th:href="@{'/model/' + ${car.id} + '/body/' + ${body.id} + '/equipment/' + ${equipment.id}}"><span th:text="${equipment.equipmentName}"></span></a>
+        <i class="right angle icon divider"></i>
+        <div class="active section" wfd-id="62"><span th:text="${component.componentName}"></span></div>
       </div>
     </div>
     <div class="field">
-      <label>Toyota <span th:text="${car.modelName}"></span> - комплектация <span th:text="${equipment.equipmentName}"></span></label>
-      <th:block th:if="${#lists.size(components)} > 0">
+      <label><span th:text="${component.subgroupComp.groupComp.groupName}"></span> на <span th:text="${car.modelName}"></span> <span th:text="${body.bodyName}"></span></label>
+      <th:block th:if="${#lists.size(units)} > 0">
         <table class="ui celled table">
           <thead>
           <tr>
             <th>№</th>
-            <th>Название</th>
-            <th>Код</th>
-            <th>Группа</th>
-            <th>Подгруппа</th>
+            <th>PNC# (SUB)</th>
+            <th>OEM номер запчасти</th>
+            <th>Кол-во на 1 машину</th>
+            <th>Период производства</th>
+            <th>Применимость для комплектаций</th>
+            <th>Под заказ</th>
+            <th>В наличии</th>
           </tr>
           </thead>
           <tbody>
-          <th:block th:each="component, state : ${components}">
+          <th:block th:each="unit, state : ${units}">
             <tr>
               <td><div th:text="${state.index + 1}"></div></td>
-              <td><a th:href="@{'/model/' + ${car.id} + '/body/' + ${body.id} + '/equipment/' + ${equipment.id} + '/component/' + ${component.id}}"><div th:text="${component.componentName}"></div></a></td>
-              <td><div th:text="${component.componentCode}"></div></td>
-              <td><div th:text="${component.subgroupComp.groupComp.groupName}"></div></td>
-              <td><div th:text="${component.subgroupComp.subgroupName}"></div></td>
+              <td><div th:text="${unit.pnc}"></div></td>
+              <td><div th:text="${unit.oem}"></div></td>
+              <td><div th:text="${unit.countForAuto}"></div></td>
+              <td><div th:text="${unit.period}"></div></td>
+              <td><div th:text="${unit.applicability}"></div></td>
+              <td><a th:href="@{${unit.inorderLink}}"><div th:text="${unit.inorder}"></div></a></td>
+              <td><a th:href="@{${unit.instockLink}}"><div th:text="${unit.instock}"></div></a></td>
             </tr>
           </th:block>
           </tbody>
         </table>
       </th:block>
-      <th:block th:if="${#lists.size(components)} == 0">
+      <th:block th:if="${#lists.size(units)} == 0">
         <div class="ui floating message" wfd-id="85">
           <p>Нет данных в базе</p>
         </div>

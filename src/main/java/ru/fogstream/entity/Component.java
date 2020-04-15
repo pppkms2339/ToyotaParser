@@ -1,6 +1,8 @@
 package ru.fogstream.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "component")
 public class Component {
@@ -15,25 +17,15 @@ public class Component {
     @Column(name = "component_code")
     private String componentCode;
 
-    private String oem;
-
-    @Column(name = "count_for_auto")
-    private String countForAuto;
-
-    private String period;
-
-    private String inorder;
-
-    private String instock;
-
-    private String applicability;
-
     private String picture;
 
     private String link;
 
     @OneToOne
     private SubgroupComp subgroupComp;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Unit> units = new ArrayList<>();
 
     public Component() {
     }
@@ -62,54 +54,6 @@ public class Component {
         this.componentCode = componentCode;
     }
 
-    public String getOem() {
-        return oem;
-    }
-
-    public void setOem(String oem) {
-        this.oem = oem;
-    }
-
-    public String getCountForAuto() {
-        return countForAuto;
-    }
-
-    public void setCountForAuto(String countForAuto) {
-        this.countForAuto = countForAuto;
-    }
-
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
-    }
-
-    public String getInorder() {
-        return inorder;
-    }
-
-    public void setInorder(String inorder) {
-        this.inorder = inorder;
-    }
-
-    public String getInstock() {
-        return instock;
-    }
-
-    public void setInstock(String instock) {
-        this.instock = instock;
-    }
-
-    public String getApplicability() {
-        return applicability;
-    }
-
-    public void setApplicability(String applicability) {
-        this.applicability = applicability;
-    }
-
     public String getPicture() {
         return picture;
     }
@@ -132,5 +76,13 @@ public class Component {
 
     public void setSubgroupComp(SubgroupComp subgroupComp) {
         this.subgroupComp = subgroupComp;
+    }
+
+    public List<Unit> getUnits() {
+        return units;
+    }
+
+    public void setUnits(List<Unit> units) {
+        this.units = units;
     }
 }
