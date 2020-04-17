@@ -13,13 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import ru.fogstream.entity.BodyBrand;
 import ru.fogstream.entity.CarModel;
 import ru.fogstream.entity.Equipment;
+import ru.fogstream.repository.EquipmentRepository;
 import ru.fogstream.repository.ModelRepository;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api")
@@ -28,26 +31,35 @@ public class ApiController {
     @Autowired
     ModelRepository modelRepository;
 
+    @Autowired
+    EquipmentRepository equipmentRepository;
+
     @Value("${site.name}")
     private String site;
 
     @GetMapping("/getModels")
     @ResponseBody
-    public Iterable<CarModel> getAllCarModels() {
-        return modelRepository.findAll();
+    public List<ObjectForOutput> getAllCarModels() {
+        Iterable<CarModel> iterable = modelRepository.findAll();
+        List<ObjectForOutput> list = new ArrayList<>();
+        for(CarModel carModel : iterable) {
+            list.add(new ObjectForOutput(carModel.getId(), carModel.getModelName()));
+        }
+        return list;
     }
 
-    @GetMapping("/getModelNames")
+    @GetMapping("/getBodies")
     @ResponseBody
-    public Map<String, String> getAllCarModelNames() {
-        Iterable<CarModel> iterable = modelRepository.findAll();
-        Map<String, String> answer = new HashMap<>();
-        int i = 0;
-        for (CarModel carModel : iterable) {
-            answer.put(Integer.toString(i), carModel.getModelName());
-            i++;
+    public ResponseEntity<List<ObjectForOutput>> getBodiesByModelId(@RequestParam("modelId") Long id) {
+        List<ObjectForOutput> list = new ArrayList<>();
+        CarModel carModel = modelRepository.findById(id).orElse(null);
+        if(carModel == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return answer;
+        for(BodyBrand bodyBrand : carModel.getBodyBrands()) {
+            list.add(new ObjectForOutput(bodyBrand.getId(), bodyBrand.getBodyName()));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     @GetMapping("/getEquipmentByBodyNumber")
@@ -58,18 +70,12 @@ public class ApiController {
             Document doc = Jsoup.connect(site + "/search_frame/?frame_no=" + param).get();
             Elements elements = doc.select(".red");
             if (elements.size() > 0) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             } else {
-                equipment = new Equipment();
                 Element table = doc.select(".table").first();
                 Elements rows = table.select("tr");
-                equipment.setPeriod(rows.get(0).select("td").get(1).text());
-                equipment.setEquipmentName(rows.get(2).select("td").get(1).text());
-                equipment.setEngine(rows.get(5).select("td").get(0).text());
-                equipment.setBody(rows.get(5).select("td").get(1).text());
-                equipment.setGrade(rows.get(5).select("td").get(2).text());
-                equipment.setKpp(rows.get(5).select("td").get(3).text());
-                equipment.setAnother(rows.get(5).select("td").get(4).text());
+                String name = rows.get(2).select("td").get(1).text();
+                equipment = equipmentRepository.findByEquipmentName(name);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,4 +83,29 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.OK).body(equipment);
     }
 
+    private class ObjectForOutput {
+        private Long id;
+        private String name;
+
+        public ObjectForOutput(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 }

@@ -7,4 +7,6 @@ import ru.fogstream.entity.Equipment;
 @Repository
 public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
 
+    Equipment findByEquipmentName(String equipmentName);
+
 }
