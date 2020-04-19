@@ -29,7 +29,7 @@ public class Equipment {
     private String link;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Component> components = new ArrayList<>();
+    private List<GroupComp> groups = new ArrayList<>();
 
     public Equipment() {
     }
@@ -106,11 +106,11 @@ public class Equipment {
         this.link = link;
     }
 
-    public List<Component> getComponents() {
-        return components;
+    public List<GroupComp> getGroups() {
+        return groups;
     }
 
-    public void setComponents(List<Component> components) {
-        this.components = components;
+    public void setGroups(List<GroupComp> groups) {
+        this.groups = groups;
     }
 }

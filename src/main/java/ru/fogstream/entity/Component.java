@@ -21,9 +21,6 @@ public class Component {
 
     private String link;
 
-    @OneToOne
-    private SubgroupComp subgroupComp;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Unit> units = new ArrayList<>();
 
@@ -68,14 +65,6 @@ public class Component {
 
     public void setLink(String link) {
         this.link = link;
-    }
-
-    public SubgroupComp getSubgroupComp() {
-        return subgroupComp;
-    }
-
-    public void setSubgroupComp(SubgroupComp subgroupComp) {
-        this.subgroupComp = subgroupComp;
     }
 
     public List<Unit> getUnits() {

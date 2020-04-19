@@ -1,6 +1,8 @@
 package ru.fogstream.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "group_comp")
 public class GroupComp {
@@ -12,11 +14,17 @@ public class GroupComp {
     @Column(name = "group_name")
     private String groupName;
 
+    private String link;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubgroupComp> subgroups = new ArrayList<>();
+
     public GroupComp() {
     }
 
-    public GroupComp(String groupName) {
+    public GroupComp(String groupName, String link) {
         this.groupName = groupName;
+        this.link = link;
     }
 
     public Long getId() {
@@ -33,5 +41,21 @@ public class GroupComp {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public List<SubgroupComp> getSubgroups() {
+        return subgroups;
+    }
+
+    public void setSubgroups(List<SubgroupComp> subgroups) {
+        this.subgroups = subgroups;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 }

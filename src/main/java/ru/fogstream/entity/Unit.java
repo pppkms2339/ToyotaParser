@@ -10,6 +10,9 @@ public class Unit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "unit_name")
+    private String unitName;
+
     @Column(name = "count_for_auto")
     private String countForAuto;
 
@@ -112,5 +115,13 @@ public class Unit {
 
     public void setOem(String oem) {
         this.oem = oem;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
     }
 }
