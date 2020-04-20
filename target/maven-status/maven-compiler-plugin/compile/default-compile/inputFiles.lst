@@ -1,10 +1,21 @@
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\repository\ModelRepository.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\ServingWebContentApplication.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\controller\DefaultController.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\BodyBrand.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\config\DataSourceConfig.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\repository\EquipmentRepository.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\Equipment.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\ProxyAddr.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\repository\BodyBrandRepository.java
-C:\Users\pppkm\IdeaProjects\Toyota\src\main\java\ru\fogstream\entity\CarModel.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\ProxyAddr.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\BodyBrandRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\BodyBrand.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\ComponentRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\UnitRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\config\DataSourceConfig.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\SubgroupRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\CarModel.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\EquipmentRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\ServingWebContentApplication.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\GroupComp.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\Unit.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\GroupRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\Equipment.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\ModelRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\controller\ApiController.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\ToyotaError.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\repository\ErrorRepository.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\controller\DefaultController.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\SubgroupComp.java
+C:\Users\pppkm\IdeaProjects\Toyota 2\src\main\java\ru\fogstream\entity\Component.java

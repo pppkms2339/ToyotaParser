@@ -24,10 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class DefaultController {
@@ -53,6 +50,9 @@ public class DefaultController {
 
     @Autowired
     ComponentRepository componentRepository;
+
+    @Autowired
+    ErrorRepository errorRepository;
 
     @Value("${site.name}")
     private String site;
@@ -126,21 +126,21 @@ public class DefaultController {
         modelRepository.save(testCar);
         //Получение групп деталей для каждой комплектации
         Iterable<Equipment> equipments = equipmentRepository.findAll();
-        for(Equipment equipment : equipments) {
+        for (Equipment equipment : equipments) {
             List<GroupComp> groups = getGroupListForEquipment(equipment);
             equipment.getGroups().addAll(groups);
             equipmentRepository.save(equipment);
         }
         //Получение подгрупп деталей для каждой группы
         Iterable<GroupComp> groups = groupRepository.findAll();
-        for(GroupComp groupComp : groups) {
+        for (GroupComp groupComp : groups) {
             List<SubgroupComp> subgroups = getSubgroupListForGroup(groupComp);
             groupComp.getSubgroups().addAll(subgroups);
             groupRepository.save(groupComp);
         }
         //Получение деталей для каждой подгруппы
         Iterable<SubgroupComp> subgroups = subgroupRepository.findAll();
-        for(SubgroupComp subgroupComp : subgroups) {
+        for (SubgroupComp subgroupComp : subgroups) {
             List<Component> components = getComponentListForSubgroup(subgroupComp);
             subgroupComp.getComponents().addAll(components);
             subgroupRepository.save(subgroupComp);
@@ -150,16 +150,16 @@ public class DefaultController {
 
     //Модели
     private void getCarModelForToyota() {
-        try {
-            String pageHtml = getPageHtml(site);
-            Document doc = Jsoup.parse(pageHtml);
-            Elements elements = doc.select(".category2 li h4 a");
-            for (Element element : elements) {
-                CarModel carModel = new CarModel(element.text(), element.attr("href"));
-                modelRepository.save(carModel);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String pageHtml = getPageHtml(site);
+        Document doc = Jsoup.parse(pageHtml);
+        if (pageHtml == null || pageHtml.equals("")) {
+            errorRepository.save(new ToyotaError("pageHtml=null", new Date(), "getCarModelForToyota", ""));
+            return;
+        }
+        Elements elements = doc.select(".category2 li h4 a");
+        for (Element element : elements) {
+            CarModel carModel = new CarModel(element.text(), element.attr("href"));
+            modelRepository.save(carModel);
         }
     }
 
@@ -175,6 +175,7 @@ public class DefaultController {
                 bodyBrands.add(bodyBrand);
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getBodyBrandListForCar", carModel.getModelName()));
             e.printStackTrace();
         }
         return bodyBrands;
@@ -201,6 +202,7 @@ public class DefaultController {
                 equipments.add(equipment);
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getEquipmentListForBody", bodyBrand.getBodyName()));
             e.printStackTrace();
         }
         return equipments;
@@ -218,6 +220,7 @@ public class DefaultController {
                 groups.add(new GroupComp(groupName, link));
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getGroupListForEquipment", equipment.getEquipmentName()));
             e.printStackTrace();
         }
         return groups;
@@ -242,9 +245,15 @@ public class DefaultController {
                 subgroups.add(subgroup);
                 URL url = new URL(site + src);
                 BufferedImage image = ImageIO.read(url);
-                ImageIO.write(image, "png", new File(uploadPath + randomString + " " + fileName));
+                if (image == null) {
+                    errorRepository.save(new ToyotaError("image = null", new Date(), "getSubgroupListForGroup", groupComp.getGroupName()));
+                    subgroup.setPicture("nophoto.jpg");
+                } else {
+                    ImageIO.write(image, "png", new File(uploadPath + randomString + " " + fileName));
+                }
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getSubgroupListForGroup", groupComp.getGroupName()));
             e.printStackTrace();
         }
         return subgroups;
@@ -263,7 +272,14 @@ public class DefaultController {
                 String randomString = UUID.randomUUID().toString();
                 URL url = new URL(site + src);
                 BufferedImage image = ImageIO.read(url);
-                ImageIO.write(image, "png", new File(uploadPath + randomString + " " + fileName));
+                String fileNameForBase = null;
+                if (image == null) {
+                    errorRepository.save(new ToyotaError("image = null", new Date(), "getComponentListForSubgroup", subgroup.getSubgroupName()));
+                    fileNameForBase = "nophoto.jpg";
+                } else {
+                    ImageIO.write(image, "png", new File(uploadPath + randomString + " " + fileName));
+                    fileNameForBase = randomString + " " + fileName;
+                }
                 //получаем список деталей
                 Elements elements = table.select(".detail-list a");
                 for (Element element : elements) {
@@ -272,7 +288,7 @@ public class DefaultController {
                         continue;
                     }
                     Component component = new Component();
-                    component.setPicture(randomString + " " + fileName); //картинка у всех одна
+                    component.setPicture(fileNameForBase); //картинка у всех одна
                     component.setComponentName(text);
                     String href = element.attr("href");
                     if (href.contains("?")) {
@@ -287,6 +303,7 @@ public class DefaultController {
                 }
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getComponentListForSubgroup", subgroup.getSubgroupName()));
             e.printStackTrace();
         }
         return components;
@@ -324,6 +341,7 @@ public class DefaultController {
                 units.add(unit);
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getUnitListForComponent", component.getComponentName()));
             e.printStackTrace();
         }
         component.getUnits().addAll(units);
@@ -451,6 +469,7 @@ public class DefaultController {
                 }
             }
         } catch (Exception e) {
+            errorRepository.save(new ToyotaError(e.getMessage(), new Date(), "getPageHtml", page));
             e.printStackTrace();
         }
         return stringBuilder.toString();

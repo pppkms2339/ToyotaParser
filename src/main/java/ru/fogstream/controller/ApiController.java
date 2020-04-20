@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.fogstream.entity.*;
 import ru.fogstream.repository.*;
 
-import javax.persistence.Column;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/api")
@@ -48,6 +46,9 @@ public class ApiController {
     @Value("${site.name}")
     private String site;
 
+    @Value("${site.url}")
+    private String appUrl;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -60,13 +61,16 @@ public class ApiController {
 
     @GetMapping("/getModels")
     @ResponseBody
-    public List<ObjectForOutput> getAllCarModels() {
+    public ResponseEntity<List<ObjectForOutput>> getAllCarModels() {
         Iterable<CarModel> iterable = modelRepository.findAll();
+        if (iterable == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
         List<ObjectForOutput> list = new ArrayList<>();
-        for(CarModel carModel : iterable) {
+        for (CarModel carModel : iterable) {
             list.add(new ObjectForOutput(carModel.getId(), carModel.getModelName()));
         }
-        return list;
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     @GetMapping("/getBodies")
@@ -74,10 +78,10 @@ public class ApiController {
     public ResponseEntity<List<ObjectForOutput>> getBodiesByModelId(@RequestParam("modelId") Long id) {
         List<ObjectForOutput> list = new ArrayList<>();
         CarModel carModel = modelRepository.findById(id).orElse(null);
-        if(carModel == null) {
+        if (carModel == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(BodyBrand bodyBrand : carModel.getBodyBrands()) {
+        for (BodyBrand bodyBrand : carModel.getBodyBrands()) {
             list.add(new ObjectForOutput(bodyBrand.getId(), bodyBrand.getBodyName()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -88,10 +92,10 @@ public class ApiController {
     public ResponseEntity<List<EquipmentForOutput>> getEquipmentsByBodyId(@RequestParam("bodyId") Long id) {
         List<EquipmentForOutput> list = new ArrayList<>();
         BodyBrand bodyBrand = bodyBrandRepository.findById(id).orElse(null);
-        if(bodyBrand == null) {
+        if (bodyBrand == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(Equipment equipment : bodyBrand.getEquipments()) {
+        for (Equipment equipment : bodyBrand.getEquipments()) {
             EquipmentForOutput eq = new EquipmentForOutput();
             eq.setId(equipment.getId());
             eq.setName(equipment.getEquipmentName());
@@ -111,10 +115,10 @@ public class ApiController {
     public ResponseEntity<List<ObjectForOutput>> getGroupsByEquipmentId(@RequestParam("equipmentId") Long id) {
         List<ObjectForOutput> list = new ArrayList<>();
         Equipment equipment = equipmentRepository.findById(id).orElse(null);
-        if(equipment == null) {
+        if (equipment == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(GroupComp group : equipment.getGroups()) {
+        for (GroupComp group : equipment.getGroups()) {
             list.add(new ObjectForOutput(group.getId(), group.getGroupName()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -125,15 +129,15 @@ public class ApiController {
     public ResponseEntity<List<ExtendObjectForOutput>> getSubgroupsByGroupId(@RequestParam("groupId") Long id, HttpServletRequest request) {
         List<ExtendObjectForOutput> list = new ArrayList<>();
         GroupComp group = groupRepository.findById(id).orElse(null);
-        if(group == null) {
+        if (group == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(SubgroupComp subgroupComp : group.getSubgroups()) {
+        for (SubgroupComp subgroupComp : group.getSubgroups()) {
             ExtendObjectForOutput obj = new ExtendObjectForOutput();
             obj.setId(subgroupComp.getId());
             obj.setName(subgroupComp.getSubgroupName());
             obj.setCode(subgroupComp.getSubgroupCode());
-            obj.setPicture(request.getContextPath() + "/api/img/" + subgroupComp.getPicture());
+            obj.setPicture(appUrl + "/api/img/" + subgroupComp.getPicture());
             list.add(obj);
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -144,15 +148,15 @@ public class ApiController {
     public ResponseEntity<List<ExtendObjectForOutput>> getComponentsBySubgroupId(@RequestParam("subgroupId") Long id, HttpServletRequest request) {
         List<ExtendObjectForOutput> list = new ArrayList<>();
         SubgroupComp subgroupComp = subgroupRepository.findById(id).orElse(null);
-        if(subgroupComp == null) {
+        if (subgroupComp == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(Component component : subgroupComp.getComponents()) {
+        for (Component component : subgroupComp.getComponents()) {
             ExtendObjectForOutput obj = new ExtendObjectForOutput();
             obj.setId(component.getId());
             obj.setName(component.getComponentName());
             obj.setCode(component.getComponentCode());
-            obj.setPicture(request.getContextPath() + "/api/img/" + component.getPicture());
+            obj.setPicture(appUrl + "/api/img/" + component.getPicture());
             list.add(obj);
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -163,10 +167,10 @@ public class ApiController {
     public ResponseEntity<List<UnitForOutput>> getUnitsByComponentId(@RequestParam("componentId") Long id) {
         List<UnitForOutput> list = new ArrayList<>();
         Component component = componentRepository.findById(id).orElse(null);
-        if(component == null) {
+        if (component == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        for(Unit unit : component.getUnits()) {
+        for (Unit unit : component.getUnits()) {
             UnitForOutput ufo = new UnitForOutput();
             ufo.setId(unit.getId());
             ufo.setName(unit.getUnitName());
