@@ -450,7 +450,7 @@ public class DefaultController {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             ProxyAddr currentProxy = proxyAddrList.get(proxyCount);
-            String command = "Curl -U " + currentProxy.getUser() + ":" + currentProxy.getPassword() + " -x " + currentProxy.getAddress() + ":" + currentProxy.getPort() + " " + page;
+            String command = "curl -U " + currentProxy.getUser() + ":" + currentProxy.getPassword() + " -x " + currentProxy.getAddress() + ":" + currentProxy.getPort() + " " + page;
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             Process process = processBuilder.start();
             String line = null;
