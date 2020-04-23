@@ -191,22 +191,38 @@ public class ApiController {
     @GetMapping("/getEquipmentByBodyNumber")
     @ResponseBody
     public ResponseEntity<Equipment> getEquipmentByBodyNumber(@RequestParam("bodyNumber") String param) {
-        Equipment equipment = null;
+        Equipment searchEquipment = null;
         try {
             Document doc = Jsoup.connect(site + "/search_frame/?frame_no=" + param).get();
             Elements elements = doc.select(".red");
             if (elements.size() > 0) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             } else {
-                Element table = doc.select(".table").first();
-                Elements rows = table.select("tr");
-                String name = rows.get(2).select("td").get(1).text();
-                equipment = equipmentRepository.findByEquipmentName(name);
+                Element menu = doc.select(".path").first();
+                String carModelName = menu.select("a").get(2).text();
+                String bodyName = menu.select("a").get(3).text();
+                String equipmentName = menu.select("span").last().text();
+                CarModel searchModel = modelRepository.findByModelName(carModelName);
+                BodyBrand searchBody = null;
+                List<BodyBrand> bodies = searchModel.getBodyBrands();
+                for (BodyBrand body : bodies) {
+                    if (body.getBodyName().equals(bodyName)) {
+                        searchBody = body;
+                        break;
+                    }
+                }
+                List<Equipment> equipments = searchBody.getEquipments();
+                for (Equipment equipment : equipments) {
+                    if (equipment.getEquipmentName().equals(equipmentName)) {
+                        searchEquipment = equipment;
+                        break;
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(equipment);
+        return ResponseEntity.status(HttpStatus.OK).body(searchEquipment);
     }
 
     private class ObjectForOutput {

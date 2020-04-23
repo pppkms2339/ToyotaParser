@@ -53,7 +53,8 @@
             <th:block th:each="car, state : ${cars}">
               <tr>
                 <td><div th:text="${state.index + 1}"></div></td>
-                <td><a th:href="@{'/model/' + ${car.id}}"><div th:text="${car.modelName}"></div></a></td>
+<!--                <td><a th:href="@{'/model/' + ${car.id}}"><div th:text="${car.modelName}"></div></a></td>-->
+                <td><div th:text="${car.modelName}"></div></td>
               </tr>
             </th:block>
             </tbody>

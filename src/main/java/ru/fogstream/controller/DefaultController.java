@@ -78,74 +78,76 @@ public class DefaultController {
         modelRepository.deleteAll();
         proxyAddrList = getProxyListFromSite();
         long start = System.currentTimeMillis();
-//        //Получение всех моделей
-//        getCarModelForToyota();
-//        //Получение кузовов для каждой модели
-//        Iterable<CarModel> carModels = modelRepository.findAll();
-//        for(CarModel carModel : carModels) {
-//            List<BodyBrand> bodyBrands = getBodyBrandListForCar(carModel);
-//            carModel.getBodyBrands().addAll(bodyBrands);
-//            modelRepository.save(carModel);
-//        }
-//        //Получение комплектаций для каждого кузова
-//        Iterable<BodyBrand> bodyBrands = bodyBrandRepository.findAll();
-//        for(BodyBrand bodyBrand : bodyBrands) {
-//            List<Equipment> equipments = getEquipmentListForBody(bodyBrand);
-//            bodyBrand.getEquipments().addAll(equipments);
-//            bodyBrandRepository.save(bodyBrand);
-//        }
-//        //Получение групп деталей для каждой комплектации
-//        Iterable<Equipment> equipments = equipmentRepository.findAll();
-//        for(Equipment equipment : equipments) {
-//            List<GroupComp> groups = getGroupListForEquipment(equipment);
-//            equipment.getGroups().addAll(groups);
-//            equipmentRepository.save(equipment);
-//        }
-//        //Получение подгрупп деталей для каждой группы
-//        Iterable<GroupComp> groups = groupRepository.findAll();
-//        for(GroupComp groupComp : groups) {
-//            List<SubgroupComp> subgroups = getSubgroupListForGroup(groupComp);
-//            groupComp.getSubgroups().addAll(subgroups);
-//            groupRepository.save(groupComp);
-//        }
-//        //Получение деталей для каждой подгруппы
-//        Iterable<SubgroupComp> subgroups = subgroupRepository.findAll();
-//        for(SubgroupComp subgroupComp : subgroups) {
-//            List<Component> components = getComponentListForSubgroup(subgroupComp);
-//            subgroupComp.getComponents().addAll(components);
-//            subgroupRepository.save(subgroupComp);
-//        }
-
-        CarModel testCar = new CarModel("Allex", "/allex/");
-        BodyBrand testBody = new BodyBrand("NZE121", "/allex/nze121/");
-        testCar.getBodyBrands().add(testBody);
-        Equipment testEquipment = new Equipment();
-        testEquipment.setEquipmentName("NZE121-AHPNK");
-        testEquipment.setLink("/allex/nze121/139267/");
-        testBody.getEquipments().add(testEquipment);
-        modelRepository.save(testCar);
+        errorRepository.save(new ToyotaError("BEGIN", new Date(), "", ""));
+        //Получение всех моделей
+        getCarModelForToyota();
+        //Получение кузовов для каждой модели
+        Iterable<CarModel> carModels = modelRepository.findAll();
+        for(CarModel carModel : carModels) {
+            List<BodyBrand> bodyBrands = getBodyBrandListForCar(carModel);
+            carModel.getBodyBrands().addAll(bodyBrands);
+            modelRepository.save(carModel);
+        }
+        //Получение комплектаций для каждого кузова
+        Iterable<BodyBrand> bodyBrands = bodyBrandRepository.findAll();
+        for(BodyBrand bodyBrand : bodyBrands) {
+            List<Equipment> equipments = getEquipmentListForBody(bodyBrand);
+            bodyBrand.getEquipments().addAll(equipments);
+            bodyBrandRepository.save(bodyBrand);
+        }
         //Получение групп деталей для каждой комплектации
         Iterable<Equipment> equipments = equipmentRepository.findAll();
-        for (Equipment equipment : equipments) {
+        for(Equipment equipment : equipments) {
             List<GroupComp> groups = getGroupListForEquipment(equipment);
             equipment.getGroups().addAll(groups);
             equipmentRepository.save(equipment);
         }
         //Получение подгрупп деталей для каждой группы
         Iterable<GroupComp> groups = groupRepository.findAll();
-        for (GroupComp groupComp : groups) {
+        for(GroupComp groupComp : groups) {
             List<SubgroupComp> subgroups = getSubgroupListForGroup(groupComp);
             groupComp.getSubgroups().addAll(subgroups);
             groupRepository.save(groupComp);
         }
         //Получение деталей для каждой подгруппы
         Iterable<SubgroupComp> subgroups = subgroupRepository.findAll();
-        for (SubgroupComp subgroupComp : subgroups) {
+        for(SubgroupComp subgroupComp : subgroups) {
             List<Component> components = getComponentListForSubgroup(subgroupComp);
             subgroupComp.getComponents().addAll(components);
             subgroupRepository.save(subgroupComp);
         }
+
+//        CarModel testCar = new CarModel("Allex", "/allex/");
+//        BodyBrand testBody = new BodyBrand("NZE121", "/allex/nze121/");
+//        testCar.getBodyBrands().add(testBody);
+//        Equipment testEquipment = new Equipment();
+//        testEquipment.setEquipmentName("NZE121-AHPNK");
+//        testEquipment.setLink("/allex/nze121/139267/");
+//        testBody.getEquipments().add(testEquipment);
+//        modelRepository.save(testCar);
+//        //Получение групп деталей для каждой комплектации
+//        Iterable<Equipment> equipments = equipmentRepository.findAll();
+//        for (Equipment equipment : equipments) {
+//            List<GroupComp> groups = getGroupListForEquipment(equipment);
+//            equipment.getGroups().addAll(groups);
+//            equipmentRepository.save(equipment);
+//        }
+//        //Получение подгрупп деталей для каждой группы
+//        Iterable<GroupComp> groups = groupRepository.findAll();
+//        for (GroupComp groupComp : groups) {
+//            List<SubgroupComp> subgroups = getSubgroupListForGroup(groupComp);
+//            groupComp.getSubgroups().addAll(subgroups);
+//            groupRepository.save(groupComp);
+//        }
+//        //Получение деталей для каждой подгруппы
+//        Iterable<SubgroupComp> subgroups = subgroupRepository.findAll();
+//        for (SubgroupComp subgroupComp : subgroups) {
+//            List<Component> components = getComponentListForSubgroup(subgroupComp);
+//            subgroupComp.getComponents().addAll(components);
+//            subgroupRepository.save(subgroupComp);
+//        }
         System.out.println("Время работы: " + (System.currentTimeMillis() - start) / 1000);
+        errorRepository.save(new ToyotaError("BEGIN", new Date(), "", ""));
     }
 
     //Модели

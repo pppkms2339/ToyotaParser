@@ -7,4 +7,6 @@ import ru.fogstream.entity.CarModel;
 @Repository
 public interface ModelRepository extends JpaRepository<CarModel, Long> {
 
+    CarModel findByModelName(String modelName);
+
 }
