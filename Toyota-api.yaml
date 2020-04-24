@@ -1,0 +1,394 @@
+openapi: 3.0.1
+info:
+  title: Toyota API
+  description: Этот API используется для получения информации о моделях Toyota, марках кузовов, их комплектаций, запчастях. По номеру кузова можно определить комплектацию (https://toyota.epcdata.ru/)
+  termsOfService: ''
+  contact:
+    email: anton.loshmanov@fogstream.ru
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+externalDocs:
+  description: Подробнее
+  url: 'https://toyota.epcdata.ru'
+servers:
+  - url: 'http://81.29.132.174:8080/Toyota/api'
+tags:
+  - name: model
+    description: Информация о моделях авто марки Toyota
+  - name: body
+    description: Информация о марках кузовов Toyota
+  - name: equipment
+    description: Информация о комплектациях Toyota
+  - name: group
+    description: Информация о группах деталей
+  - name: subgroup
+    description: Информация о подгруппах деталей
+  - name: component
+    description: Информация о деталях
+  - name: unit
+    description: Подробная информация деталях
+paths:
+  /getModels:
+    get:
+      tags:
+        - model
+      summary: Найти все модели
+      description: Найти все объекты класса CarModel (модель, model) в базе данных и вывести в виде списка
+      operationId: findAllmodels
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+        '404':
+          description: Список моделей не получен 
+          content: {}
+  /getEquipmentByBodyNumber:
+    get:
+      tags:
+        - equipment
+      summary: Найти комплектацию кузова по номеру кузова. Номер кузова указан в свидетельстве о регистрации
+      description: Найти комплектацию (объект класса Equipment) по номеру кузова
+      operationId: findEquipmentByBodyNumber
+      parameters:
+        - in: query
+          name: bodyNumber
+          description: номер кузова
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Комплектация найдена
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Equipment'
+        '404':
+          description: Комплектация не найдена
+          content: {}
+  /getBodies:
+    get:
+      tags:
+        - body
+      summary: Вывести список всех марок кузовов для данной модели
+      description: Вывести список всех марок кузовов (спиоск объектов BodyBrand) по номеру (id) модели
+      operationId: findBodiesByModelId
+      parameters: 
+        - in: query
+          name: modelId
+          description: Номер (id) модели
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Body'
+        '404':
+          description: Список кузовов не получен 
+          content: {}
+  /getEquipments:
+    get:
+      tags:
+        - equipment
+      summary: Вывести список всех комплектаций для данного кузова
+      description: Вывести список всех комплектаций (спиоск объектов Equipment) по номеру (id) кузова
+      operationId: findEquipmentsByBodyId
+      parameters: 
+        - in: query
+          name: bodyId
+          description: Номер (id) кузова
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipment'
+        '404':
+          description: Список комплектаций не получен 
+          content: {}
+  /getGroups:
+    get:
+      tags:
+        - group
+      summary: Вывести список всех групп деталей для данной комплектации
+      description: Вывести список всех групп деталей (список объектов GroupComp) по номеру (id) комплектации
+      operationId: findGroupsByEquipmentId
+      parameters: 
+        - in: query
+          name: equipmentId
+          description: Номер (id) комплектации
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        '404':
+          description: Список групп не получен 
+          content: {}
+  /getSubgroups:
+    get:
+      tags:
+        - subgroup
+      summary: Вывести список всех подггрупп деталей для данной группы деталей
+      description: Вывести список всех подгрупп деталей (список объектов SubgroupComp) по номеру (id) группы
+      operationId: findSubgroupsByGroupId
+      parameters: 
+        - in: query
+          name: groupId
+          description: Номер (id) группы деталей
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subgroup'
+        '404':
+          description: Список подгрупп не получен 
+          content: {}
+  /getComponents:
+    get:
+      tags:
+        - component
+      summary: Вывести список всех деталей в данной подгруппе
+      description: Вывести список всех деталей (список объектов Component) по номеру (id) подгруппы
+      operationId: findComponentsBySubgroupId
+      parameters: 
+        - in: query
+          name: subgroupId
+          description: Номер (id) подгруппы деталей
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Component'
+        '404':
+          description: Список деталей не получен 
+          content: {}
+  /getUnits:
+    get:
+      tags:
+        - unit
+      summary: Вывести подробный список деталей, номенклатуру данной детали
+      description: Вывести подробный номенклатуру деталей (список объектов Unit) по номеру (id) детали
+      operationId: findUnitsByComponentId
+      parameters: 
+        - in: query
+          name: componentId
+          description: Номер (id) детали
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Операция прошла успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit'
+        '404':
+          description: Номенклатура деталей не получена
+          content: {}
+components:
+  schemas:
+    Model:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Allex
+    Body:
+      required: 
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: NZE121
+    Equipment:
+      required:
+        - id
+        - name
+        - period
+        - engine
+        - body
+        - grade
+        - kpp
+        - additionalInfo
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: CR30G-PEZX
+        period:
+          type: string
+          example: 08.1988 - 01.1992
+        engine:
+          type: string
+          example: 2CT
+        body:
+          type: string
+          example: WG
+        grade:
+          type: string
+          example: E  
+        kpp:
+          type: string
+          example: ATM
+        additionalInfo:
+          type: string
+          example: 4FC HRF 08S
+    Group:
+      required: 
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Трансмиссия и шасси
+    Subgroup:
+      required: 
+      - id
+      - name
+      - code
+      - picture
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: Диск сцепления и корзина
+        code:
+          type: string
+          example: 31-01
+        picture:
+          type: string
+          example: http://81.29.132.174:8080/Toyota/api/img/file.png
+    Component:
+      required: 
+      - id
+      - name
+      - code
+      - picture
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: JACK ASSY
+        code:
+          type: string
+          example: 09110
+        picture:
+          type: string
+          example: http://81.29.132.174:8080/Toyota/api/img/file.png
+    Unit:
+      required: 
+      - id
+      - name
+      - countForAuto
+      - period
+      - inorder
+      - inorderLink
+      - instock
+      - instockLink
+      - applicability
+      - pnc
+      - oem
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: JACK ASSY
+        countForAuto:
+          type: string
+          example: 01
+        period:
+          type: string
+          example: 01.2001 - 09.2002
+        inorder:
+          type: string
+          example: от 4 088 до 4 243 руб.
+        inorderLink:
+          type: string
+          example: https://www.amayama.com/ru/part/toyota/0911102020
+        instock:
+          type: string
+          example: от 995 до 10 710 руб.
+        instockLink:
+          type: string
+          example: https://baza.drom.ru/oem/0911102020/
+        applicability:
+          type: string
+          example: NZE12#,ZZE123
+        pnc:
+          type: string
+          example: 09110
+        oem:
+          type: string
+          example: 09111-02020
+    
