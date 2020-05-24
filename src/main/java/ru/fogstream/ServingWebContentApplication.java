@@ -7,11 +7,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.fogstream.config.DataSourceConfig;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableJpaRepositories("ru.fogstream.repository")
 @Import(DataSourceConfig.class)
+//@EnableScheduling
 public class ServingWebContentApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

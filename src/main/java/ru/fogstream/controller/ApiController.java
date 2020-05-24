@@ -1,5 +1,6 @@
 package ru.fogstream.controller;
 
+import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -63,7 +64,7 @@ public class ApiController {
     @ResponseBody
     public ResponseEntity<List<ObjectForOutput>> getAllCarModels() {
         Iterable<CarModel> iterable = modelRepository.findAll();
-        if (iterable == null) {
+        if (iterable == null || !iterable.iterator().hasNext()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         List<ObjectForOutput> list = new ArrayList<>();
@@ -110,6 +111,17 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    @GetMapping("/getCountOfEquipments")
+    @ResponseBody
+    public ResponseEntity<String> getCountOfEquipments() {
+        Iterable<Equipment> iterable = equipmentRepository.findAll();
+        int count = 0;
+        for (Equipment equipment : iterable) {
+            count++;
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Count Of Equipments: " + count);
+    }
+
     @GetMapping("/getGroups")
     @ResponseBody
     public ResponseEntity<List<ObjectForOutput>> getGroupsByEquipmentId(@RequestParam("equipmentId") Long id) {
@@ -119,7 +131,7 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         for (GroupComp group : equipment.getGroups()) {
-            list.add(new ObjectForOutput(group.getId(), group.getGroupName()));
+            list.add(new ObjectForOutput(group.getId(), group.getGroupCatalog().getGroupName()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
@@ -135,9 +147,9 @@ public class ApiController {
         for (SubgroupComp subgroupComp : group.getSubgroups()) {
             ExtendObjectForOutput obj = new ExtendObjectForOutput();
             obj.setId(subgroupComp.getId());
-            obj.setName(subgroupComp.getSubgroupName());
-            obj.setCode(subgroupComp.getSubgroupCode());
-            obj.setPicture(appUrl + "/api/img/" + subgroupComp.getPicture());
+            obj.setName(subgroupComp.getSubgroupCatalog().getSubgroupName());
+            obj.setCode(subgroupComp.getSubgroupCatalog().getSubgroupCode());
+            obj.setPicture(appUrl + "/api/img/" + subgroupComp.getSubgroupCatalog().getPicture());
             list.add(obj);
         }
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -190,8 +202,8 @@ public class ApiController {
 
     @GetMapping("/getEquipmentByBodyNumber")
     @ResponseBody
-    public ResponseEntity<Equipment> getEquipmentByBodyNumber(@RequestParam("bodyNumber") String param) {
-        Equipment searchEquipment = null;
+    public ResponseEntity<JSONObject> getEquipmentByBodyNumber(@RequestParam("bodyNumber") String param) {
+        JSONObject answer = new JSONObject();
         try {
             Document doc = Jsoup.connect(site + "/search_frame/?frame_no=" + param).get();
             Elements elements = doc.select(".red");
@@ -202,7 +214,13 @@ public class ApiController {
                 String carModelName = menu.select("a").get(2).text();
                 String bodyName = menu.select("a").get(3).text();
                 String equipmentName = menu.select("span").last().text();
-                CarModel searchModel = modelRepository.findByModelName(carModelName);
+                CarModel searchModel = modelRepository.findByModelName(carModelName).orElse(null);
+                if (searchModel == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+                JSONObject modelObj = new JSONObject();
+                modelObj.put("id", searchModel.getId());
+                modelObj.put("name", searchModel.getModelName());
                 BodyBrand searchBody = null;
                 List<BodyBrand> bodies = searchModel.getBodyBrands();
                 for (BodyBrand body : bodies) {
@@ -211,6 +229,10 @@ public class ApiController {
                         break;
                     }
                 }
+                JSONObject bodyObj = new JSONObject();
+                bodyObj.put("id", searchBody.getId());
+                bodyObj.put("name", searchBody.getBodyName());
+                Equipment searchEquipment = null;
                 List<Equipment> equipments = searchBody.getEquipments();
                 for (Equipment equipment : equipments) {
                     if (equipment.getEquipmentName().equals(equipmentName)) {
@@ -218,11 +240,18 @@ public class ApiController {
                         break;
                     }
                 }
+                JSONObject equipmentObj = new JSONObject();
+                equipmentObj.put("id", searchEquipment.getId());
+                equipmentObj.put("name", searchEquipment.getEquipmentName());
+                //Формируем JSON-объект-ответ
+                answer.put("model", modelObj);
+                answer.put("body", bodyObj);
+                answer.put("equipment", equipmentObj);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(searchEquipment);
+        return ResponseEntity.status(HttpStatus.OK).body(answer);
     }
 
     private class ObjectForOutput {

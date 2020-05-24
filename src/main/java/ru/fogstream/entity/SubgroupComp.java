@@ -11,52 +11,16 @@ public class SubgroupComp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "subgroup_name")
-    private String subgroupName;
-
-    @Column(name = "subgroup_code")
-    private String subgroupCode;
-
-    private String picture;
-
     private String link;
+
+    @OneToOne
+    @JoinColumn(name = "subgroup_catalog_id")
+    private SubgroupCatalog subgroupCatalog;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Component> components = new ArrayList<>();
 
     public SubgroupComp() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSubgroupName() {
-        return subgroupName;
-    }
-
-    public String getSubgroupCode() {
-        return subgroupCode;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setSubgroupName(String subgroupName) {
-        this.subgroupName = subgroupName;
-    }
-
-    public void setSubgroupCode(String subgroupCode) {
-        this.subgroupCode = subgroupCode;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     public List<Component> getComponents() {
@@ -73,5 +37,21 @@ public class SubgroupComp {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public SubgroupCatalog getSubgroupCatalog() {
+        return subgroupCatalog;
+    }
+
+    public void setSubgroupCatalog(SubgroupCatalog subgroupCatalog) {
+        this.subgroupCatalog = subgroupCatalog;
     }
 }

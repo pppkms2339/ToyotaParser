@@ -54,7 +54,7 @@ paths:
       tags:
         - equipment
       summary: Найти комплектацию кузова по номеру кузова. Номер кузова указан в свидетельстве о регистрации
-      description: Найти комплектацию (объект класса Equipment) по номеру кузова
+      description: Найти комплектацию по номеру кузова
       operationId: findEquipmentByBodyNumber
       parameters:
         - in: query
@@ -69,7 +69,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Equipment'
+                  $ref: '#/components/schemas/EquipmentSearch'
         '404':
           description: Комплектация не найдена
           content: {}
@@ -391,4 +391,20 @@ components:
         oem:
           type: string
           example: 09111-02020
+    EquipmentSearch:
+      required: 
+      - model
+      - body
+      - equipment
+      type: object
+      properties:
+        model:
+          type: object
+          example: {"id": 1, "name": "Crown"}
+        body:
+          type: object
+          example: {"id": 12, "name": "NZE121"}
+        equipment:
+          type: object
+          example: {"id": 123, "name": "CR30G-PEZX"}
     

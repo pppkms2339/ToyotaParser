@@ -11,20 +11,16 @@ public class GroupComp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "group_name")
-    private String groupName;
-
     private String link;
+
+    @OneToOne
+    @JoinColumn(name = "group_catalog_id")
+    private GroupCatalog groupCatalog;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubgroupComp> subgroups = new ArrayList<>();
 
     public GroupComp() {
-    }
-
-    public GroupComp(String groupName, String link) {
-        this.groupName = groupName;
-        this.link = link;
     }
 
     public Long getId() {
@@ -33,14 +29,6 @@ public class GroupComp {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
     }
 
     public List<SubgroupComp> getSubgroups() {
@@ -57,5 +45,13 @@ public class GroupComp {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public GroupCatalog getGroupCatalog() {
+        return groupCatalog;
+    }
+
+    public void setGroupCatalog(GroupCatalog groupCatalog) {
+        this.groupCatalog = groupCatalog;
     }
 }
